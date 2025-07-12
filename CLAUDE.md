@@ -16,6 +16,7 @@ This is an ESLint plugin for enforcing RSCSS (Reasonable System for CSS Styleshe
 - `pnpm run build` - Build the plugin with tsup (outputs to dist/)
 - `pnpm run check:type` - TypeScript type checking
 - `pnpm run dev` - Build in watch mode
+- `pnpm exec biome check --write` - Format and lint code with Biome
 
 ## Project Structure
 
@@ -50,6 +51,9 @@ Enforces RSCSS class naming conventions:
 Options:
 - `allowPascalCase`: Allow PascalCase for components
 - `allowCamelCase`: Allow camelCase for elements
+- `componentFormat`: Custom regex pattern for component naming
+- `maxDepth`: Maximum selector nesting depth (default: 4)
+- `componentWhitelist`: Array of allowed single-word component names
 
 ### no-descendant-combinator
 Prevents descendant combinators (space) in CSS selectors, enforcing direct child combinator (>) usage.
@@ -69,6 +73,13 @@ Invalid: `.parent .child`
 - `typescript` ^5.5.0 - TypeScript compiler
 - `vitest` ^2.0.0 - Test framework
 
+## Code Quality Tools
+
+- **Biome**: Code formatter and linter (automatically runs via hooks)
+- **TypeScript**: Type checking and compilation
+- **Vitest**: Testing framework
+- **ESLint**: Linting (for the plugin itself)
+
 ## ESLint Plugin Development Notes
 
 - Uses @eslint/css parser for CSS processing with CSSTree AST
@@ -77,6 +88,7 @@ Invalid: `.parent .child`
 - Follow TDD approach: write tests first, then implement rules
 - TypeScript is used for type safety
 - Uses `require('@eslint/css')` in test-utils.ts for parser import
+- Code is automatically formatted with Biome on file changes
 
 ## Package Manager
 
