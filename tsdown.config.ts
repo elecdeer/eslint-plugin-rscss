@@ -8,5 +8,4 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   target: "node22",
-  // external: ["eslint", "@eslint/css"],
 });

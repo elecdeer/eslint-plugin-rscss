@@ -1,6 +1,6 @@
 # eslint-plugin-rscss
 
-ESLint plugin for enforcing [RSCSS](https://rscss.io/) (Reasonable System for CSS Stylesheet Structure) conventions in your CSS code.
+ESLint plugin for enforcing [RSCSS](https://web.archive.org/web/20220317015429/https://rscss.io/) (Reasonable System for CSS Stylesheet Structure) conventions in your CSS code.
 
 ## 🚀 Features
 
@@ -25,8 +25,9 @@ pnpm add --dev eslint-plugin-rscss
 
 ## ⚠️ Requirements
 
-- **ESLint**: v9.6.0 or higher
+- **ESLint**: v9.6.0 or higher (peer dependency)
 - **@eslint/css**: v0.10.0 or higher (peer dependency)
+- **Node.js**: v22 or higher
 
 ## 🔧 Setup
 
@@ -76,7 +77,7 @@ export default [rscss.configs.recommended];
 
 ## 🎯 RSCSS Methodology
 
-[RSCSS](https://rscss.io/) is a methodology for organizing CSS with component-based architecture:
+[RSCSS](https://web.archive.org/web/20220317015429/https://rscss.io/) is a methodology for organizing CSS with component-based architecture:
 
 ### Components
 

@@ -25,7 +25,7 @@
     "linter",
     "style"
   ],
-  "author": "",
+  "author": "elecdeer (https://github.com/elecdeer)",
   "license": "MIT",
   "packageManager": "pnpm@10.12.1",
   "files": [
