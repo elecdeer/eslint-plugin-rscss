@@ -1,13 +1,46 @@
 {
   "name": "eslint-plugin-rscss",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "ESLint plugin for RSCSS (Reasonable System for CSS Stylesheet Structure) conventions",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
-  "keywords": [],
+  "scripts": {
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "build": "tsup",
+    "check:type": "tsc --noEmit",
+    "dev": "tsup --watch"
+  },
+  "keywords": [
+    "eslint",
+    "css",
+    "rscss",
+    "linter",
+    "style"
+  ],
   "author": "",
   "license": "MIT",
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.12.1",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "eslint": ">=9.6.0"
+  },
+  "dependencies": {
+    "@eslint/css": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.13",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
 }
