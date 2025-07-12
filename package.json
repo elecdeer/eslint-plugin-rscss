@@ -1,56 +1,56 @@
 {
-  "name": "eslint-plugin-rscss",
-  "version": "0.0.1",
-  "description": "ESLint plugin for RSCSS (Reasonable System for CSS Stylesheet Structure) conventions",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "scripts": {
-    "test": "vitest",
-    "test:watch": "vitest --watch",
-    "build": "tsdown",
-    "check:type": "tsc --noEmit",
-    "check:lint": "biome check",
-    "fix:lint": "biome check --write",
-    "dev": "tsdown --watch",
-    "changeset": "changeset",
-    "changeset:version": "changeset version && pnpm install --lockfile-only",
-    "changeset:publish": "pnpm run build && changeset publish",
-    "release": "pnpm run build && pnpm changeset:publish"
-  },
-  "keywords": [
-    "eslint",
-    "css",
-    "rscss",
-    "linter",
-    "style"
-  ],
-  "author": "elecdeer (https://github.com/elecdeer)",
-  "license": "MIT",
-  "packageManager": "pnpm@10.12.1",
-  "files": [
-    "dist"
-  ],
-  "peerDependencies": {
-    "@eslint/css": "^0.10.0",
-    "eslint": ">=9.6.0"
-  },
-  "dependencies": {
-    "@typescript-eslint/utils": "^8.36.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.1.1",
-    "@changesets/changelog-github": "^0.5.1",
-    "@changesets/cli": "^2.29.5",
-    "@eslint/css": "^0.10.0",
-    "@types/node": "^24.0.13",
-    "@typescript-eslint/rule-tester": "^8.36.0",
-    "tsdown": "^0.12.9",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
-  }
+	"name": "eslint-plugin-rscss",
+	"version": "0.0.1",
+	"description": "ESLint plugin for RSCSS (Reasonable System for CSS Stylesheet Structure) conventions",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"test": "vitest",
+		"test:watch": "vitest --watch",
+		"build": "tsdown",
+		"check:type": "tsc --noEmit",
+		"check:lint": "biome check",
+		"fix:lint": "biome check --write",
+		"dev": "tsdown --watch",
+		"changeset": "changeset",
+		"changeset:version": "changeset version && pnpm install --lockfile-only",
+		"changeset:publish": "pnpm run build && changeset publish",
+		"release": "pnpm run build && pnpm changeset:publish"
+	},
+	"keywords": [
+		"eslint",
+		"css",
+		"rscss",
+		"linter",
+		"style"
+	],
+	"author": "elecdeer (https://github.com/elecdeer)",
+	"license": "MIT",
+	"packageManager": "pnpm@10.12.1",
+	"files": [
+		"dist"
+	],
+	"peerDependencies": {
+		"@eslint/css": "^0.10.0",
+		"eslint": ">=9.6.0"
+	},
+	"dependencies": {
+		"@typescript-eslint/utils": "^8.36.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.1.1",
+		"@changesets/changelog-github": "^0.5.1",
+		"@changesets/cli": "^2.29.5",
+		"@eslint/css": "^0.10.0",
+		"@types/node": "^24.0.13",
+		"@typescript-eslint/rule-tester": "^8.36.0",
+		"tsdown": "^0.12.9",
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.4"
+	}
 }

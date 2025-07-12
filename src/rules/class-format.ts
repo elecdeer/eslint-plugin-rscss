@@ -9,13 +9,13 @@ type MessageIds =
 	| "onlyOneComponentName"
 	| "maxDepthExceeded";
 
-type FormatOption = 
-	| 'twoWords' 
-	| 'oneWord' 
-	| 'underScored' 
-	| 'dashFirst' 
-	| 'pascal' 
-	| { type: 'custom'; pattern: string };
+type FormatOption =
+	| "twoWords"
+	| "oneWord"
+	| "underScored"
+	| "dashFirst"
+	| "pascal"
+	| { type: "custom"; pattern: string };
 
 export interface Options {
 	component?: FormatOption;
@@ -47,7 +47,13 @@ export const classFormat = createRule<[Options?], MessageIds>({
 						oneOf: [
 							{
 								type: "string",
-								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+								enum: [
+									"twoWords",
+									"oneWord",
+									"underScored",
+									"dashFirst",
+									"pascal",
+								],
 							},
 							{
 								type: "object",
@@ -70,7 +76,13 @@ export const classFormat = createRule<[Options?], MessageIds>({
 						oneOf: [
 							{
 								type: "string",
-								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+								enum: [
+									"twoWords",
+									"oneWord",
+									"underScored",
+									"dashFirst",
+									"pascal",
+								],
 							},
 							{
 								type: "object",
@@ -93,7 +105,13 @@ export const classFormat = createRule<[Options?], MessageIds>({
 						oneOf: [
 							{
 								type: "string",
-								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+								enum: [
+									"twoWords",
+									"oneWord",
+									"underScored",
+									"dashFirst",
+									"pascal",
+								],
 							},
 							{
 								type: "object",
@@ -116,7 +134,13 @@ export const classFormat = createRule<[Options?], MessageIds>({
 						oneOf: [
 							{
 								type: "string",
-								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+								enum: [
+									"twoWords",
+									"oneWord",
+									"underScored",
+									"dashFirst",
+									"pascal",
+								],
 							},
 							{
 								type: "object",
@@ -181,7 +205,7 @@ export const classFormat = createRule<[Options?], MessageIds>({
 
 		// Generate pattern for given format option
 		function getPatternForFormat(format: FormatOption): RegExp {
-			if (typeof format === 'string') {
+			if (typeof format === "string") {
 				if (format in defaultPatterns) {
 					return defaultPatterns[format as keyof typeof defaultPatterns];
 				}
@@ -193,10 +217,12 @@ export const classFormat = createRule<[Options?], MessageIds>({
 		}
 
 		// Get patterns for each selector type
-		const componentPattern = getPatternForFormat(options.component || 'twoWords');
-		const elementPattern = getPatternForFormat(options.element || 'oneWord');
-		const variantPattern = getPatternForFormat(options.variant || 'dashFirst');
-		const helperPattern = getPatternForFormat(options.helper || 'underScored');
+		const componentPattern = getPatternForFormat(
+			options.component || "twoWords",
+		);
+		const elementPattern = getPatternForFormat(options.element || "oneWord");
+		const variantPattern = getPatternForFormat(options.variant || "dashFirst");
+		const helperPattern = getPatternForFormat(options.helper || "underScored");
 
 		// Component whitelist
 		const componentWhitelist = options.componentWhitelist || [];
@@ -219,7 +245,8 @@ export const classFormat = createRule<[Options?], MessageIds>({
 		function isValidVariantName(name: string): boolean {
 			// If variant format is not "dashFirst", remove the leading "-" for pattern matching
 			const variantFormat = options.variant || "dashFirst";
-			const isDefaultDashFirst = typeof variantFormat === 'string' && variantFormat === "dashFirst";
+			const isDefaultDashFirst =
+				typeof variantFormat === "string" && variantFormat === "dashFirst";
 			if (!isDefaultDashFirst && name.startsWith("-")) {
 				return variantPattern.test(name.slice(1));
 			}
@@ -229,7 +256,8 @@ export const classFormat = createRule<[Options?], MessageIds>({
 		function isValidHelperName(name: string): boolean {
 			// If helper format is not "underScored", remove the leading "_" for pattern matching
 			const helperFormat = options.helper || "underScored";
-			const isDefaultUnderScored = typeof helperFormat === 'string' && helperFormat === "underScored";
+			const isDefaultUnderScored =
+				typeof helperFormat === "string" && helperFormat === "underScored";
 			if (!isDefaultUnderScored && name.startsWith("_")) {
 				return helperPattern.test(name.slice(1));
 			}
