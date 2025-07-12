@@ -32,14 +32,15 @@
     "dist"
   ],
   "peerDependencies": {
-    "eslint": ">=9.6.0"
+    "eslint": ">=9.6.0",
+    "@eslint/css": "^0.10.0"
   },
   "dependencies": {
-    "@eslint/css": "^0.10.0",
     "@typescript-eslint/utils": "^8.36.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
+    "@eslint/css": "^0.10.0",
     "@types/node": "^24.0.13",
     "@typescript-eslint/rule-tester": "^8.36.0",
     "tsdown": "^0.12.9",
