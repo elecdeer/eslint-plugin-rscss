@@ -2,10 +2,12 @@ import { classFormat } from "./rules/class-format";
 import { noDescendantCombinator } from "./rules/no-descendant-combinator";
 import { TSESLint } from "@typescript-eslint/utils";
 
+import packageJson from "../package.json" assert { type: "json" };
+
 const plugin: TSESLint.FlatConfig.Plugin = {
   meta: {
     name: "eslint-plugin-rscss",
-    version: "1.0.0",
+    version: packageJson.version,
   },
   rules: {
     "class-format": classFormat,

@@ -1,5 +1,7 @@
 # eslint-plugin-rscss
 
+[![CI](https://github.com/elecdeer/eslint-plugin-rscss/workflows/CI/badge.svg)](https://github.com/elecdeer/eslint-plugin-rscss/actions)
+
 ESLint plugin for enforcing [RSCSS](https://web.archive.org/web/20220317015429/https://rscss.io/) (Reasonable System for CSS Stylesheet Structure) conventions in your CSS code.
 
 ## 🚀 Features

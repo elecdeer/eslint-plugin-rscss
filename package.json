@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-rscss",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "ESLint plugin for RSCSS (Reasonable System for CSS Stylesheet Structure) conventions",
   "type": "module",
   "exports": {
