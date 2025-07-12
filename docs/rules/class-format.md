@@ -16,26 +16,44 @@ This rule enforces RSCSS (Reasonable System for CSS Stylesheet Structure) class 
 ```js
 {
   "rscss/class-format": ["error", {
-    "allowPascalCase": false,        // Allow PascalCase for components
-    "allowCamelCase": false,         // Allow camelCase for elements
-    "componentFormat": null,         // Custom regex pattern for components
+    "component": "twoWords",         // Format for component names
+    "element": "oneWord",            // Format for element names
+    "helper": "underScored",         // Format for helper names
+    "variant": "dashFirst",          // Format for variant names
     "maxDepth": 4,                   // Maximum selector nesting depth
     "componentWhitelist": []         // Array of allowed single-word component names
   }]
 }
 ```
 
-### `allowPascalCase` (default: `false`)
+### Format Options
 
-When `true`, allows PascalCase naming for components (e.g., `SearchForm`, `ArticleCard`).
+Each format option (`component`, `element`, `helper`, `variant`) can be set to:
 
-### `allowCamelCase` (default: `false`)
+#### Predefined Formats
 
-When `true`, allows camelCase naming for elements (e.g., `inputField`, `submitButton`).
+- `"twoWords"` (default for components): Two or more words with hyphens (e.g., `search-form`, `article-card`)
+- `"oneWord"` (default for elements): Single word (e.g., `input`, `title`)
+- `"underScored"` (default for helpers): Starts with underscore (e.g., `_helper`, `_clearfix`)
+- `"dashFirst"` (default for variants): Starts with dash (e.g., `-primary`, `-highlighted`)
+- `"pascal"`: PascalCase naming (e.g., `SearchForm`, `ArticleCard`)
 
-### `componentFormat` (default: `null`)
+#### Custom Formats
 
-When specified, uses a custom regular expression pattern for component validation instead of the default RSCSS pattern.
+For custom patterns, use an object with `type: "custom"` and a `pattern` property:
+
+```js
+{
+  "component": {
+    "type": "custom",
+    "pattern": "^c-[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+  },
+  "element": {
+    "type": "custom", 
+    "pattern": "^[a-z]+[A-Z][a-zA-Z0-9]*$"
+  }
+}
+```
 
 ### `maxDepth` (default: `4`)
 
@@ -108,7 +126,7 @@ div[data-active] {
 ### ✅ Valid with options
 
 ```css
-/* allowPascalCase: true */
+/* component: "pascal" */
 .SearchForm {
 }
 .ArticleCard {
@@ -116,10 +134,28 @@ div[data-active] {
 .UserProfile {
 }
 
-/* allowCamelCase: true */
-.search-form > .inputField {
+/* element: "pascal" */
+.search-form > .InputField {
 }
-.article-card > .submitButton {
+.article-card > .SubmitButton {
+}
+
+/* element: "twoWords" */
+.search-form > .input-field {
+}
+.article-card > .submit-button {
+}
+
+/* helper: "twoWords" */
+.clear-both {
+}
+.text-center {
+}
+
+/* variant: "oneWord" */
+.button.primary {
+}
+.card.highlighted {
 }
 
 /* componentWhitelist: ["component", "button"] */
@@ -128,10 +164,16 @@ div[data-active] {
 .button {
 }
 
-/* componentFormat: "^c-[a-z][a-z0-9]*(-[a-z0-9]+)*$" */
+/* component: { type: "custom", pattern: "^c-[a-z][a-z0-9]*(-[a-z0-9]+)*$" } */
 .c-search-form {
 }
 .c-article-card {
+}
+
+/* element: { type: "custom", pattern: "^[a-z]+[A-Z][a-zA-Z0-9]*$" } */
+.search-form > .inputField123 {
+}
+.article-card > .customElement {
 }
 
 /* maxDepth: 2 */

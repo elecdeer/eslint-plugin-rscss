@@ -9,10 +9,19 @@ type MessageIds =
 	| "onlyOneComponentName"
 	| "maxDepthExceeded";
 
+type FormatOption = 
+	| 'twoWords' 
+	| 'oneWord' 
+	| 'underScored' 
+	| 'dashFirst' 
+	| 'pascal' 
+	| { type: 'custom'; pattern: string };
+
 export interface Options {
-	allowPascalCase?: boolean;
-	allowCamelCase?: boolean;
-	componentFormat?: string;
+	component?: FormatOption;
+	element?: FormatOption;
+	helper?: FormatOption;
+	variant?: FormatOption;
 	maxDepth?: number;
 	componentWhitelist?: string[];
 }
@@ -34,16 +43,97 @@ export const classFormat = createRule<[Options?], MessageIds>({
 			{
 				type: "object",
 				properties: {
-					allowPascalCase: {
-						type: "boolean",
-						default: false,
+					component: {
+						oneOf: [
+							{
+								type: "string",
+								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+							},
+							{
+								type: "object",
+								properties: {
+									type: {
+										type: "string",
+										enum: ["custom"],
+									},
+									pattern: {
+										type: "string",
+									},
+								},
+								required: ["type", "pattern"],
+								additionalProperties: false,
+							},
+						],
+						default: "twoWords",
 					},
-					allowCamelCase: {
-						type: "boolean",
-						default: false,
+					element: {
+						oneOf: [
+							{
+								type: "string",
+								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+							},
+							{
+								type: "object",
+								properties: {
+									type: {
+										type: "string",
+										enum: ["custom"],
+									},
+									pattern: {
+										type: "string",
+									},
+								},
+								required: ["type", "pattern"],
+								additionalProperties: false,
+							},
+						],
+						default: "oneWord",
 					},
-					componentFormat: {
-						type: "string",
+					helper: {
+						oneOf: [
+							{
+								type: "string",
+								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+							},
+							{
+								type: "object",
+								properties: {
+									type: {
+										type: "string",
+										enum: ["custom"],
+									},
+									pattern: {
+										type: "string",
+									},
+								},
+								required: ["type", "pattern"],
+								additionalProperties: false,
+							},
+						],
+						default: "underScored",
+					},
+					variant: {
+						oneOf: [
+							{
+								type: "string",
+								enum: ["twoWords", "oneWord", "underScored", "dashFirst", "pascal"],
+							},
+							{
+								type: "object",
+								properties: {
+									type: {
+										type: "string",
+										enum: ["custom"],
+									},
+									pattern: {
+										type: "string",
+									},
+								},
+								required: ["type", "pattern"],
+								additionalProperties: false,
+							},
+						],
+						default: "dashFirst",
 					},
 					maxDepth: {
 						type: "integer",
@@ -80,20 +170,33 @@ export const classFormat = createRule<[Options?], MessageIds>({
 	create(context) {
 		const options: Options = context.options[0] || {};
 
-		// RSCSS naming patterns
-		const componentPattern = /^[a-z][a-z0-9]*(-[a-z0-9]+)+$/; // 2+ words with hyphens
-		const elementPattern = /^[a-z][a-z0-9]*$/; // single word
-		const variantPattern = /^-[a-z][a-z0-9]*(-[a-z0-9]+)*$/; // starts with -
-		const helperPattern = /^_[a-z][a-z0-9]*(-[a-z0-9]+)*$/; // starts with _
+		// Default patterns for each type
+		const defaultPatterns = {
+			twoWords: /^[a-z][a-z0-9]*(-[a-z0-9]+)+$/, // 2+ words with hyphens
+			oneWord: /^[a-z][a-z0-9]*$/, // single word
+			dashFirst: /^-[a-z][a-z0-9]*(-[a-z0-9]+)*$/, // starts with -
+			underScored: /^_[a-z][a-z0-9]*(-[a-z0-9]+)*$/, // starts with _
+			pascal: /^[A-Z][a-zA-Z0-9]*$/, // Pascal case
+		};
 
-		// Pascal case patterns (if allowed)
-		const pascalComponentPattern = /^[A-Z][a-zA-Z0-9]*$/;
-		const camelElementPattern = /^[a-z][a-zA-Z0-9]*$/;
+		// Generate pattern for given format option
+		function getPatternForFormat(format: FormatOption): RegExp {
+			if (typeof format === 'string') {
+				if (format in defaultPatterns) {
+					return defaultPatterns[format as keyof typeof defaultPatterns];
+				}
+				// Fallback: treat as custom regex for backward compatibility
+				return new RegExp(format);
+			}
+			// Custom pattern object
+			return new RegExp(format.pattern);
+		}
 
-		// Custom component format pattern
-		const customComponentPattern = options.componentFormat
-			? new RegExp(options.componentFormat)
-			: null;
+		// Get patterns for each selector type
+		const componentPattern = getPatternForFormat(options.component || 'twoWords');
+		const elementPattern = getPatternForFormat(options.element || 'oneWord');
+		const variantPattern = getPatternForFormat(options.variant || 'dashFirst');
+		const helperPattern = getPatternForFormat(options.helper || 'underScored');
 
 		// Component whitelist
 		const componentWhitelist = options.componentWhitelist || [];
@@ -106,33 +209,30 @@ export const classFormat = createRule<[Options?], MessageIds>({
 			if (componentWhitelist.includes(name)) {
 				return true;
 			}
-
-			// If custom format is specified, only use that pattern
-			if (customComponentPattern) {
-				return customComponentPattern.test(name);
-			}
-
-			// Check PascalCase
-			if (options.allowPascalCase && pascalComponentPattern.test(name)) {
-				return true;
-			}
-
-			// Check default hyphenated format
 			return componentPattern.test(name);
 		}
 
 		function isValidElementName(name: string): boolean {
-			if (options.allowCamelCase && camelElementPattern.test(name)) {
-				return true;
-			}
 			return elementPattern.test(name);
 		}
 
 		function isValidVariantName(name: string): boolean {
+			// If variant format is not "dashFirst", remove the leading "-" for pattern matching
+			const variantFormat = options.variant || "dashFirst";
+			const isDefaultDashFirst = typeof variantFormat === 'string' && variantFormat === "dashFirst";
+			if (!isDefaultDashFirst && name.startsWith("-")) {
+				return variantPattern.test(name.slice(1));
+			}
 			return variantPattern.test(name);
 		}
 
 		function isValidHelperName(name: string): boolean {
+			// If helper format is not "underScored", remove the leading "_" for pattern matching
+			const helperFormat = options.helper || "underScored";
+			const isDefaultUnderScored = typeof helperFormat === 'string' && helperFormat === "underScored";
+			if (!isDefaultUnderScored && name.startsWith("_")) {
+				return helperPattern.test(name.slice(1));
+			}
 			return helperPattern.test(name);
 		}
 
@@ -186,31 +286,17 @@ export const classFormat = createRule<[Options?], MessageIds>({
 			// Context determines classification
 			if (context === "standalone") {
 				// Standalone: must be component
-				if (
-					className.includes("-") ||
-					(options.allowPascalCase && pascalComponentPattern.test(className)) ||
-					componentWhitelist.includes(className) ||
-					(customComponentPattern && customComponentPattern.test(className))
-				) {
-					return {
-						type: "component",
-						name: className,
-						isValid: isValidComponentName(className),
-					};
-				} else {
-					// Single word standalone = invalid component unless whitelisted
-					return {
-						type: "component",
-						name: className,
-						isValid: componentWhitelist.includes(className),
-					};
-				}
+				return {
+					type: "component",
+					name: className,
+					isValid: isValidComponentName(className),
+				};
 			} else {
 				// Child context: treat as element
 				return {
 					type: "element",
 					name: className,
-					isValid: isValidElementName(className), // Elements can't have hyphens
+					isValid: isValidElementName(className),
 				};
 			}
 		}
@@ -294,10 +380,7 @@ export const classFormat = createRule<[Options?], MessageIds>({
 					// Check if it looks like a component (multi-word or whitelisted)
 					if (
 						componentWhitelist.includes(className) ||
-						componentPattern.test(className) ||
-						(options.allowPascalCase &&
-							pascalComponentPattern.test(className)) ||
-						(customComponentPattern && customComponentPattern.test(className))
+						componentPattern.test(className)
 					) {
 						componentCount++;
 					}
