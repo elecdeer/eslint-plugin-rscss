@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "ESLint plugin for RSCSS (Reasonable System for CSS Stylesheet Structure) conventions",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,6 +14,8 @@
     "test:watch": "vitest --watch",
     "build": "tsup",
     "check:type": "tsc --noEmit",
+    "check:lint": "biome check",
+    "fix:lint": "biome check --write",
     "dev": "tsup --watch"
   },
   "keywords": [
@@ -39,6 +39,7 @@
     "@typescript-eslint/utils": "^8.36.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.1.1",
     "@types/node": "^24.0.13",
     "@typescript-eslint/rule-tester": "^8.36.0",
     "tsup": "^8.0.0",
