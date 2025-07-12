@@ -1,10 +1,5 @@
-import { RuleTester } from "eslint";
+import { RuleTester } from "@typescript-eslint/rule-tester";
 import cssPlugin from "@eslint/css";
-import { describe, it } from "vitest";
-
-RuleTester.describe = describe;
-RuleTester.it = it;
-RuleTester.itOnly = it.only;
 
 export const ruleTester = new RuleTester({
   plugins: {
@@ -12,3 +7,6 @@ export const ruleTester = new RuleTester({
   },
   language: "css/css",
 });
+
+// Export ESLintUtils for rule creation helpers
+export { ESLintUtils } from "@typescript-eslint/utils";

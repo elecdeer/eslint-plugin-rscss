@@ -1,21 +1,25 @@
-import type { Rule } from "eslint";
+import { ESLintUtils } from "@typescript-eslint/utils";
 
-// type MessageIds = "unexpectedDescendantCombinator";
+type MessageIds = "unexpectedDescendantCombinator";
 
-export const noDescendantCombinator: Rule.RuleModule = {
+const createRule = ESLintUtils.RuleCreator(
+  (name) => `https://github.com/your-org/eslint-plugin-rscss/blob/main/docs/rules/${name}.md`
+);
+
+export const noDescendantCombinator = createRule<[], MessageIds>({
+  name: "no-descendant-combinator",
+  defaultOptions: [],
   meta: {
     type: "problem",
     docs: {
       description: "Disallow descendant combinators in CSS selectors",
-      category: "Stylistic Issues", 
-      recommended: true,
     },
     schema: [],
     messages: {
       unexpectedDescendantCombinator: 'Unexpected descendant combinator in "{{selector}}". Use direct child combinator (>) instead.',
     },
   },
-  create(context: Rule.RuleContext) {
+  create(context) {
     function hasDescendantCombinator(selectorText: string): boolean {
       // Remove comments and normalize whitespace
       const normalized = selectorText.replace(/\/\*.*?\*\//g, '').replace(/\s+/g, ' ').trim();
@@ -75,4 +79,4 @@ export const noDescendantCombinator: Rule.RuleModule = {
       },
     };
   },
-};
+});

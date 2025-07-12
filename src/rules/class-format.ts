@@ -1,4 +1,4 @@
-import type { Rule } from "eslint";
+import { ESLintUtils } from "@typescript-eslint/utils";
 
 type MessageIds =
   | "invalidComponentName"
@@ -12,13 +12,17 @@ export interface Options {
   allowCamelCase?: boolean;
 }
 
-export const classFormat: Rule.RuleModule = {
+const createRule = ESLintUtils.RuleCreator(
+  (name) => `https://github.com/your-org/eslint-plugin-rscss/blob/main/docs/rules/${name}.md`
+);
+
+export const classFormat = createRule<[Options?], MessageIds>({
+  name: "class-format",
+  defaultOptions: [{}],
   meta: {
     type: "problem",
     docs: {
       description: "Enforce RSCSS class naming conventions",
-      category: "Stylistic Issues",
-      recommended: true,
     },
     schema: [
       {
@@ -49,7 +53,7 @@ export const classFormat: Rule.RuleModule = {
         'Unexpected descendant combinator in "{{selector}}". Use direct child combinator (>) instead.',
     },
   },
-  create(context: Rule.RuleContext) {
+  create(context) {
     const options: Options = context.options[0] || {};
 
     // RSCSS naming patterns
@@ -255,4 +259,4 @@ export const classFormat: Rule.RuleModule = {
       },
     };
   },
-};
+});
