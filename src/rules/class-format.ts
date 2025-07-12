@@ -5,11 +5,16 @@ type MessageIds =
   | "invalidElementName"
   | "invalidVariantName"
   | "invalidHelperName"
-  | "unexpectedDescendantCombinator";
+  | "unexpectedDescendantCombinator"
+  | "onlyOneComponentName"
+  | "maxDepthExceeded";
 
 export interface Options {
   allowPascalCase?: boolean;
   allowCamelCase?: boolean;
+  componentFormat?: string;
+  maxDepth?: number;
+  componentWhitelist?: string[];
 }
 
 const createRule = ESLintUtils.RuleCreator(
@@ -36,6 +41,20 @@ export const classFormat = createRule<[Options?], MessageIds>({
             type: "boolean",
             default: false,
           },
+          componentFormat: {
+            type: "string",
+          },
+          maxDepth: {
+            type: "integer",
+            minimum: 1,
+            default: 4,
+          },
+          componentWhitelist: {
+            type: "array",
+            items: {
+              type: "string",
+            },
+          },
         },
         additionalProperties: false,
       },
@@ -51,6 +70,10 @@ export const classFormat = createRule<[Options?], MessageIds>({
         'Invalid helper name "{{selector}}". Helpers must start with an underscore (e.g., "_helper").',
       unexpectedDescendantCombinator:
         'Unexpected descendant combinator in "{{selector}}". Use direct child combinator (>) instead.',
+      onlyOneComponentName:
+        'Only one component name is allowed: "{{selector}}".',
+      maxDepthExceeded:
+        'Maximum depth of {{maxDepth}} exceeded in selector "{{selector}}".',
     },
   },
   create(context) {
@@ -66,10 +89,34 @@ export const classFormat = createRule<[Options?], MessageIds>({
     const pascalComponentPattern = /^[A-Z][a-zA-Z0-9]*$/;
     const camelElementPattern = /^[a-z][a-zA-Z0-9]*$/;
 
+    // Custom component format pattern
+    const customComponentPattern = options.componentFormat 
+      ? new RegExp(options.componentFormat) 
+      : null;
+
+    // Component whitelist
+    const componentWhitelist = options.componentWhitelist || [];
+
+    // Max depth (default: 4)
+    const maxDepth = options.maxDepth || 4;
+
     function isValidComponentName(name: string): boolean {
+      // Check whitelist first
+      if (componentWhitelist.includes(name)) {
+        return true;
+      }
+
+      // If custom format is specified, only use that pattern
+      if (customComponentPattern) {
+        return customComponentPattern.test(name);
+      }
+
+      // Check PascalCase
       if (options.allowPascalCase && pascalComponentPattern.test(name)) {
         return true;
       }
+
+      // Check default hyphenated format
       return componentPattern.test(name);
     }
 
@@ -125,18 +172,21 @@ export const classFormat = createRule<[Options?], MessageIds>({
       // Context determines classification
       if (context === "standalone") {
         // Standalone: must be component
-        if (className.includes("-") || (options.allowPascalCase && pascalComponentPattern.test(className))) {
+        if (className.includes("-") || 
+            (options.allowPascalCase && pascalComponentPattern.test(className)) ||
+            componentWhitelist.includes(className) ||
+            (customComponentPattern && customComponentPattern.test(className))) {
           return {
             type: "component",
             name: className,
             isValid: isValidComponentName(className),
           };
         } else {
-          // Single word standalone = invalid component
+          // Single word standalone = invalid component unless whitelisted
           return {
             type: "component",
             name: className,
-            isValid: false,
+            isValid: componentWhitelist.includes(className),
           };
         }
       } else {
@@ -196,6 +246,47 @@ export const classFormat = createRule<[Options?], MessageIds>({
       return false;
     }
 
+    function checkSelectorDepth(selectorText: string): boolean {
+      // Count child combinators (>) to determine depth
+      const childCombinators = (selectorText.match(/>/g) || []).length;
+      return childCombinators + 1 <= maxDepth;
+    }
+
+    function checkMultipleComponentNames(selectorText: string): boolean {
+      // Split by all combinators (>, +, ~, space) to get individual selector parts
+      const parts = selectorText.split(/[\s>+~]+/).map(part => part.trim()).filter(part => part);
+      
+      for (const part of parts) {
+        // Look for multiple classes in a single part (like .class1.class2)
+        const classes = part.match(/\.[a-zA-Z_-][a-zA-Z0-9_-]*/g) || [];
+        let componentCount = 0;
+        
+        for (const classSelector of classes) {
+          const className = classSelector.replace(/^\./, "");
+          
+          // Skip variants and helpers
+          if (className.startsWith("-") || className.startsWith("_")) {
+            continue;
+          }
+          
+          // Check if it looks like a component (multi-word or whitelisted)
+          if (componentWhitelist.includes(className) ||
+              componentPattern.test(className) ||
+              (options.allowPascalCase && pascalComponentPattern.test(className)) ||
+              (customComponentPattern && customComponentPattern.test(className))) {
+            componentCount++;
+          }
+        }
+        
+        // Only check for multiple components in the same element (.comp1.comp2)
+        if (componentCount > 1) {
+          return false;
+        }
+      }
+      
+      return true;
+    }
+
     return {
       Rule(node: any) {
         const prelude = node.prelude;
@@ -214,6 +305,29 @@ export const classFormat = createRule<[Options?], MessageIds>({
             context.report({
               node: selector,
               messageId: "unexpectedDescendantCombinator",
+              data: { selector: selectorText },
+            });
+            return;
+          }
+
+          // Check maximum depth
+          if (!checkSelectorDepth(selectorText)) {
+            context.report({
+              node: selector,
+              messageId: "maxDepthExceeded",
+              data: { 
+                selector: selectorText,
+                maxDepth: maxDepth.toString()
+              },
+            });
+            return;
+          }
+
+          // Check for multiple component names
+          if (!checkMultipleComponentNames(selectorText)) {
+            context.report({
+              node: selector,
+              messageId: "onlyOneComponentName",
               data: { selector: selectorText },
             });
             return;
