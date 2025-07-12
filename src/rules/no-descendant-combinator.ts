@@ -4,7 +4,7 @@ type MessageIds = "unexpectedDescendantCombinator";
 
 const createRule = ESLintUtils.RuleCreator(
 	(name) =>
-		`https://github.com/your-org/eslint-plugin-rscss/blob/main/docs/rules/${name}.md`,
+		`https://github.com/elecdeer/eslint-plugin-rscss/blob/main/docs/rules/${name}.md`,
 );
 
 export const noDescendantCombinator = createRule<[], MessageIds>({

@@ -1,0 +1,232 @@
+# rscss/class-format
+
+Enforces RSCSS class naming conventions.
+
+## Rule Details
+
+This rule enforces RSCSS (Reasonable System for CSS Stylesheet Structure) class naming conventions:
+
+- **Components**: 2+ words with hyphens (e.g., `component-name`, `search-form`)
+- **Elements**: single word (e.g., `element`, `input`, `title`)
+- **Variants**: start with hyphen (e.g., `-primary`, `-highlighted`)
+- **Helpers**: start with underscore (e.g., `_helper`, `_clearfix`)
+
+## Options
+
+```js
+{
+  "rscss/class-format": ["error", {
+    "allowPascalCase": false,        // Allow PascalCase for components
+    "allowCamelCase": false,         // Allow camelCase for elements
+    "componentFormat": null,         // Custom regex pattern for components
+    "maxDepth": 4,                   // Maximum selector nesting depth
+    "componentWhitelist": []         // Array of allowed single-word component names
+  }]
+}
+```
+
+### `allowPascalCase` (default: `false`)
+
+When `true`, allows PascalCase naming for components (e.g., `SearchForm`, `ArticleCard`).
+
+### `allowCamelCase` (default: `false`)
+
+When `true`, allows camelCase naming for elements (e.g., `inputField`, `submitButton`).
+
+### `componentFormat` (default: `null`)
+
+When specified, uses a custom regular expression pattern for component validation instead of the default RSCSS pattern.
+
+### `maxDepth` (default: `4`)
+
+Maximum allowed nesting depth for selectors. Counts the number of child combinators (`>`) plus one.
+
+### `componentWhitelist` (default: `[]`)
+
+Array of component names that are allowed even if they don't match the standard RSCSS pattern.
+
+## Examples
+
+### ✅ Valid
+
+```css
+/* Components - multi-word with hyphens */
+.search-form {
+}
+.article-card {
+}
+.user-profile {
+}
+.navigation-menu {
+}
+
+/* Elements - single word, child of component */
+.search-form > .input {
+}
+.article-card > .title {
+}
+.navigation-menu > .item {
+}
+
+/* Variants - start with dash */
+.button.-primary {
+}
+.card.-highlighted {
+}
+.search-form.-compact {
+}
+
+/* Helpers - start with underscore */
+._clearfix {
+}
+._hidden {
+}
+._text-center {
+}
+
+/* Nested elements */
+.search-form > .input-group > .input {
+}
+.article-card > .meta > .author {
+}
+
+/* Combined variants */
+.search-form > .input.-error {
+}
+.button.-primary.-large {
+}
+
+/* Non-class selectors */
+p {
+}
+div[data-active] {
+}
+.component:hover {
+}
+```
+
+### ✅ Valid with options
+
+```css
+/* allowPascalCase: true */
+.SearchForm {
+}
+.ArticleCard {
+}
+.UserProfile {
+}
+
+/* allowCamelCase: true */
+.search-form > .inputField {
+}
+.article-card > .submitButton {
+}
+
+/* componentWhitelist: ["component", "button"] */
+.component {
+}
+.button {
+}
+
+/* componentFormat: "^c-[a-z][a-z0-9]*(-[a-z0-9]+)*$" */
+.c-search-form {
+}
+.c-article-card {
+}
+
+/* maxDepth: 2 */
+.component > .element {
+} /* depth: 2 */
+```
+
+### ❌ Invalid
+
+```css
+/* Invalid component names - single word */
+.component {
+}
+.button {
+}
+.form {
+}
+
+/* Invalid component names - uppercase */
+.Component-Name {
+}
+.Search-Form {
+}
+.ARTICLE-CARD {
+}
+
+/* Invalid component names - underscore */
+.component_name {
+}
+.search_form {
+}
+
+/* Invalid element names - multiple words */
+.search-form > .input-field {
+}
+.article-card > .submit-button {
+}
+.navigation-menu > .menu-item {
+}
+
+/* Invalid element names - uppercase */
+.search-form > .Input {
+}
+.article-card > .Title {
+}
+
+/* Invalid variant names - no leading dash */
+.button.primary {
+}
+.card.highlighted {
+}
+.form.compact {
+}
+
+/* Invalid variant names - uppercase */
+.button.-Primary {
+}
+.card.-HIGHLIGHTED {
+}
+
+/* Invalid helper names - no leading underscore */
+.clearfix {
+}
+.hidden {
+}
+.text-center {
+}
+
+/* Invalid helper names - uppercase */
+._Clearfix {
+}
+._HIDDEN {
+}
+
+/* Invalid descendant combinators */
+.search-form .input {
+}
+.article-card .title {
+}
+
+/* Too deep nesting (maxDepth: 3) */
+.component > .element > .subelement > .subsubelement {
+}
+
+/* Multiple component names */
+.search-form.article-card {
+}
+.component-one.component-two {
+}
+```
+
+## When Not To Use
+
+This rule should not be used if:
+
+- You're not following RSCSS methodology
+- You have existing CSS that doesn't follow RSCSS conventions and can't be refactored
+- You prefer different naming conventions (BEM, SMACSS, etc.)
