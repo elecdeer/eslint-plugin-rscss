@@ -1,0 +1,25 @@
+# Source files
+src/
+tests/
+*.test.ts
+*.test.js
+
+# Config files
+.changeset/
+.github/
+biome.json
+tsconfig.json
+tsdown.config.ts
+vitest.config.ts
+.gitignore
+
+# Documentation (except README)
+docs/
+CLAUDE.md
+
+# Development files
+node_modules/
+.pnpm-lock.yaml
+pnpm-lock.yaml
+*.log
+.DS_Store

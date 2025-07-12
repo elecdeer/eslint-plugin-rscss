@@ -16,7 +16,11 @@
     "check:type": "tsc --noEmit",
     "check:lint": "biome check",
     "fix:lint": "biome check --write",
-    "dev": "tsdown --watch"
+    "dev": "tsdown --watch",
+    "changeset": "changeset",
+    "changeset:version": "changeset version && pnpm install --lockfile-only",
+    "changeset:publish": "pnpm run build && changeset publish",
+    "release": "pnpm run build && pnpm changeset:publish"
   },
   "keywords": [
     "eslint",
@@ -32,14 +36,16 @@
     "dist"
   ],
   "peerDependencies": {
-    "eslint": ">=9.6.0",
-    "@eslint/css": "^0.10.0"
+    "@eslint/css": "^0.10.0",
+    "eslint": ">=9.6.0"
   },
   "dependencies": {
     "@typescript-eslint/utils": "^8.36.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.5",
     "@eslint/css": "^0.10.0",
     "@types/node": "^24.0.13",
     "@typescript-eslint/rule-tester": "^8.36.0",
